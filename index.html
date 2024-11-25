@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        /* Estilos del contenedor principal */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Estilos de la pantalla de login */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffffff;
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .login-form h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .login-form button:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 15px;
+        }
+
+        /* Estilos del menú principal */
+        .menu-container {
+            display: none;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-container h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .module-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .module-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .module-container {
+            margin-top: 20px;
+        }
+
+        /* Estilos para las tablas */
+        .module-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .module-table th,
+        .module-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .module-table th {
+            background-color: #f2f2f2;
+        }
+
+        /* Estilos para el botón de cerrar sesión */
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de login -->
+    <div id="login-screen" class="login-container">
+        <div class="login-form">
+            <h2>Iniciar sesión</h2>
+            <div id="error-message" class="error-message" style="display: none;"></div>
+            <input type="text" id="username" placeholder="Usuario">
+            <input type="password" id="password" placeholder="Contraseña">
+            <button onclick="login()">Ingresar</button>
+        </div>
+    </div>
+
+    <!-- Pantalla principal (Menú de Módulos) -->
+    <div id="menu-screen" class="menu-container">
+        <h2>Bienvenido al Panel de Administración</h2>
+        <button class="module-btn" onclick="showModule('ventas')">Ventas</button>
+        <button class="module-btn" onclick="showModule('anulaciones')">Anulaciones</button>
+        <button class="module-btn" onclick="showModule('cierres')">Cierres</button>
+        <button class="module-btn" onclick="showModule('proveedores')">Proveedores</button>
+        <button class="module-btn" onclick="showModule('peticiones')">Peticiones</button>
+        <button class="module-btn" onclick="showModule('quejas')">Quejas</button>
+        <button class="module-btn" onclick="showModule('configuraciones')">Configuraciones</button>
+        <button class="module-btn" onclick="showModule('inventarios')">Inventarios</button>
+
+        <!-- Botón para cerrar sesión -->
+        <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+
+        <!-- Contenedor para mostrar las tablas de los módulos -->
+        <div id="module-container" class="module-container"></div>
+    </div>
+
+    <script>
+        // Función de inicio de sesión
+        function login() {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            var errorMessage = document.getElementById('error-message');
+
+            if (username === "admin" && password === "12345") {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('menu-screen').style.display = 'block';
+            } else {
+                errorMessage.textContent = 'Usuario o contraseña incorrectos.';
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        // Función para mostrar el módulo correspondiente
+        function showModule(module) {
+            var moduleContainer = document.getElementById('module-container');
+            var tableContent = '';
+
+            // Definir las tablas con datos ficticios para cada módulo
+            if (module === 'ventas') {
+                tableContent = `
+                    <h3>Ventas</h3>
+                    <table class="module-table">
+                        <thead>
+                            <tr><th>Producto</th><th>Cantidad</th><th>Precio</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Producto 1</td><td>10</td><td>$100</td></tr>
+                            <tr><td>Producto 2</td><td>5</td><td>$50</td></tr>
+                        </tbody>
+                    </table>`;
+            } else if (module === 'anulaciones') {
+                tableContent = `
+                    <h3>Anulaciones</h3>
+                    <table class="module-table">
+                        <thead>
+                            <tr><th>Producto</th><th>Motivo</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Producto 1</td><td>Error en la cantidad</td></tr>
+                            <tr><td>Producto 2</td><td>Devolución</td></tr>
+                        </tbody>
+                    </table>`;
+            } else if (module === 'cierres') {
+                tableContent = `
+                    <h3>Cierres</h3>
+                    <table class="module-table">
+                        <thead>
+                            <tr><th>Fecha</th><th>Total Ventas</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>2024-11-24</td><td>$5000</td></tr>
+                            <tr><td>2024-11-23</td><td>$4500</td></tr>
+                        </tbody>
+                    </table>`;
+            } else if (module === 'proveedores') {
+                tableContent = `
+                    <h3>Proveedores</h3>
+                    <table class="module-table">
+                        <thead>
+                            <tr><th>Proveedor</th><th>Producto</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Proveedor A</td><td>Producto 1</td></tr>
+                            <tr><td>Proveedor B</td><td>Producto 2</td></tr>
+                        </tbody>
+                    </table>`;
+            } else if (module === 'peticiones') {
+                tableContent = `
+                    <h3>Peticiones</h3>
+                    <table class="module-table">
+                        <thead>
+                            <tr><th>Cliente</th><th>Petición</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Cliente 1</td><td>Petición 1</td></tr>
+                            <tr><td>Cliente 2</td><td>Petición 2</td></tr>
+                        </tbody>
+                    </table>`;
+            } else if (module === 'quejas') {
+                tableContent = `
+                    <h3>Quejas</h3>
+                    <table class="module-table">
+                        <thead>
+                            <tr><th>Cliente</th><th>Queja</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Cliente 1</td><td>Queja 1</td></tr>
+                            <tr><td>Cliente 2</td><td>Queja 2</td></tr>
+                        </tbody>
+                    </table>`;
+            } else if (module === 'configuraciones') {
+                tableContent = `
+                    <h3>Configuraciones</h3>
+                    <table class="module-table">
+                        <thead>
+                            <tr><th>Configuración</th><th>Valor</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Configuración 1</td><td>Valor 1</td></tr>
+                            <tr><td>Configuración 2</td><td>Valor 2</td></tr>
+                        </tbody>
+                    </table>`;
+            } else if (module === 'inventarios') {
+                tableContent = `
+                    <h3>Inventarios</h3>
+                    <table class="module-table">
+                        <thead>
+                            <tr><th>Producto</th><th>Cantidad</th><th>Precio</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Producto 1</td><td>100</td><td>$200</td></tr>
+                            <tr><td>Producto 2</td><td>50</td><td>$150</td></tr>
+                        </tbody>
+                    </table>`;
+            }
+
+            // Mostrar la tabla correspondiente
+            moduleContainer.innerHTML = tableContent;
+        }
+
+        // Función para cerrar sesión
+        function logout() {
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('menu-screen').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
